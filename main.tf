@@ -26,6 +26,22 @@ resource "aws_security_group" "sameep_sg" {
     to_port     = 80
   }
 
+  ingress{
+    description = "sameep security group from terraform ssh"
+    cidr_blocks   = ["0.0.0.0/0"]
+    from_port   = 22
+    protocol = "tcp"
+    to_port     = 22
+  }
+
+  egress{
+    description = "egress for all traffic"
+    from_port = 0
+    to_port = 0
+    protocol = -1
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = {
     Name = "sameep-aws-sg-terraform"
     terraform = "true"
@@ -85,6 +101,7 @@ resource "aws_instance" "sameep_terraform_ec2" {
   instance_type = var.instance_type
   subnet_id = aws_subnet.sameep_terraform_subnet_1.id
   vpc_security_group_ids = [aws_security_group.sameep_sg.id] # Attach the security group
+  associate_public_ip_address = true
   key_name = var.key_name
 
   tags = {
@@ -175,6 +192,81 @@ resource "aws_route_table_association" "sameep_association_route_table_private_2
 }
 */
 
+/*
+//------------------IAM Roleeeeeeeeeeeeeeeeeeeeeeee----------------------------------------
+resource "aws_iam_role" "sameep_iam_role" {
+  name = "sameep_test_role"
 
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
 
+  tags = {
+    tag-key = "tag-value"
+    Name = "sameep_IAM_role_terraform"
+    silo = "intern2"
+    owner = "sameep.sigdel"
+    terraform = "true"
+    environment = "dev"
+  }
+}
 
+//-------------------IAM Role Policyyyyyyyyyyyyyyyy-----------------------
+resource "aws_iam_policy" "sameep_policy" {
+  name        = "sameep_iam_test_policy"
+  description = "Sameep IAM test policy"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+*/
+//------------------S333333333333333333333333333333------------------------
+# resource "aws_s3_bucket" "sameep_static_website_s3_bucket" {
+#   bucket = "sameep_s3_static_website_bucket" #Should be globally unique
+
+#   tags = {
+#   Name        = "sameep_s3_bucket"
+#   owner = "sameep.sigdel"
+#   environment = "dev"
+#   }
+# }
+
+# resource "aws_s3_bucket_ownership_controls" "sameep_s3_ownership_controls" {
+#   bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+#   rule {
+#     object_ownership = "BucketOwnerPreferred"
+#   }
+# }
+
+# resource "aws_s3_bucket_public_access_block" "sameep_aws_s3_bucket_public_access_block" {
+#   bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+
+#   block_public_acls       = falseonst getUserByID = (req, res) => {
+#   block_public_policy     = false
+#   ignore_public_acls      = false
+#   restrict_public_buckets = false
+# }
