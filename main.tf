@@ -1,70 +1,75 @@
-// -----------------VPCccccccccccccccccccc------------------------
-
-resource "aws_vpc" "sameep_terraform_vpc" {
-  cidr_block = "10.0.0.0/16"
-  tags= {
-  Name = "sameep_terraform_vpc"
-    silo = "intern2"
-    owner = "sameep.sigdel"
-    terraform = "true"
-    environment = "dev"
-  }
+module "template_files"{
+  source = "hashicorp/dir/template"
+  base_dir = "${path.module}/website"
 }
 
-// ----------------Security Groupssssssssssssssss-------------
+# // -----------------VPCccccccccccccccccccc------------------------
 
-resource "aws_security_group" "sameep_sg" {
-  name        = "sameep_sg_vpc_1_terraform"
-  description = "sameep aws securitygroup built using terraform"
-  vpc_id      = aws_vpc.sameep_terraform_vpc.id
+# resource "aws_vpc" "sameep_terraform_vpc" {
+#   cidr_block = "10.0.0.0/16"
+#   tags= {
+#   Name = "sameep_terraform_vpc"
+#     silo = "intern2"
+#     owner = "sameep.sigdel"
+#     terraform = "true"
+#     environment = "dev"
+#   }
+# }
 
-  ingress{
-    description = "sameep security group from terraform http"
-    cidr_blocks   = ["0.0.0.0/0"]
-    from_port   = 80
-    protocol = "tcp"
-    to_port     = 80
-  }
+# // ----------------Security Groupssssssssssssssss-------------
 
-  ingress{
-    description = "sameep security group from terraform ssh"
-    cidr_blocks   = ["0.0.0.0/0"]
-    from_port   = 22
-    protocol = "tcp"
-    to_port     = 22
-  }
+# resource "aws_security_group" "sameep_sg" {
+#   name        = "sameep_sg_vpc_1_terraform"
+#   description = "sameep aws securitygroup built using terraform"
+#   vpc_id      = aws_vpc.sameep_terraform_vpc.id
 
-  egress{
-    description = "egress for all traffic"
-    from_port = 0
-    to_port = 0
-    protocol = -1
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   ingress{
+#     description = "sameep security group from terraform http"
+#     cidr_blocks   = ["0.0.0.0/0"]
+#     from_port   = 80
+#     protocol = "tcp"
+#     to_port     = 80
+#   }
 
-  tags = {
-    Name = "sameep-aws-sg-terraform"
-    terraform = "true"
-    silo = "intern2"
-    owner = "sameep.sigdel"
-    environment = "dev"
-  }
-}
+#   ingress{
+#     description = "sameep security group from terraform ssh"
+#     cidr_blocks   = ["0.0.0.0/0"]
+#     from_port   = 22
+#     protocol = "tcp"
+#     to_port     = 22
+#   }
 
-//-------------Subnetsssssssssssssssssss-----------
+#   egress{
+#     description = "egress for all traffic"
+#     from_port = 0
+#     to_port = 0
+#     protocol = -1
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-resource "aws_subnet" "sameep_terraform_subnet_1" {
-  vpc_id     = aws_vpc.sameep_terraform_vpc.id
-  cidr_block = "10.0.1.0/24"
+#   tags = {
+#     Name = "sameep-aws-sg-terraform"
+#     terraform = "true"
+#     silo = "intern2"
+#     owner = "sameep.sigdel"
+#     environment = "dev"
+#   }
+# }
 
-  tags = {
-    Name = "sameep_terraform_subnet_1"
-    silo = "intern2"
-    owner = "sameep.sigdel"
-    terraform = "true"
-    environment = "dev"
-  }
-}
+# //-------------Subnetsssssssssssssssssss-----------
+
+# resource "aws_subnet" "sameep_terraform_subnet_1" {
+#   vpc_id     = aws_vpc.sameep_terraform_vpc.id
+#   cidr_block = "10.0.1.0/24"
+
+#   tags = {
+#     Name = "sameep_terraform_subnet_1"
+#     silo = "intern2"
+#     owner = "sameep.sigdel"
+#     terraform = "true"
+#     environment = "dev"
+#   }
+# }
 
 /*
 resource "aws_subnet" "sameep_terraform_subnet_private_1" {
@@ -96,35 +101,35 @@ resource "aws_subnet" "sameep_terraform_subnet_private_2" {
 
 // -----------------------EC2 Instance----------------------------
 
-resource "aws_instance" "sameep_terraform_ec2" {
-  ami           = var.ami
-  instance_type = var.instance_type
-  subnet_id = aws_subnet.sameep_terraform_subnet_1.id
-  vpc_security_group_ids = [aws_security_group.sameep_sg.id] # Attach the security group
-  associate_public_ip_address = true
-  key_name = var.key_name
+# resource "aws_instance" "sameep_terraform_ec2" {
+#   ami           = var.ami
+#   instance_type = var.instance_type
+#   subnet_id = aws_subnet.sameep_terraform_subnet_1.id
+#   vpc_security_group_ids = [aws_security_group.sameep_sg.id] # Attach the security group
+#   associate_public_ip_address = true
+#   key_name = var.key_name
 
-  tags = {
-    Name = "sameep-first-terraform-webserver"
-    silo = "intern2"
-    owner = "sameep.sigdel"
-    terraform = "true"
-    environment = "dev"
-  }
-}
+#   tags = {
+#     Name = "sameep-first-terraform-webserver"
+#     silo = "intern2"
+#     owner = "sameep.sigdel"
+#     terraform = "true"
+#     environment = "dev"
+#   }
+# }
 
-//----------------------Internet Gatewayyyyyyyyyyyyy------------------------------
-resource "aws_internet_gateway" "sameep_internet_gateway_1" {
-  vpc_id = aws_vpc.sameep_terraform_vpc.id
+# //----------------------Internet Gatewayyyyyyyyyyyyy------------------------------
+# resource "aws_internet_gateway" "sameep_internet_gateway_1" {
+#   vpc_id = aws_vpc.sameep_terraform_vpc.id
 
-  tags = {
-    Name = "sameep_internet_gateway_1_terraform"
-    silo = "intern2"
-    owner = "sameep.sigdel"
-    terraform = "true"
-    environment = "dev"
-  }
-}
+#   tags = {
+#     Name = "sameep_internet_gateway_1_terraform"
+#     silo = "intern2"
+#     owner = "sameep.sigdel"
+#     terraform = "true"
+#     environment = "dev"
+#   }
+# }
 
 /*
 //----------------------Elastic Ippppppppppppppppppppppp---------------------
@@ -154,14 +159,14 @@ resource "aws_nat_gateway" "sameep_nat_gateway_1" {
 
 
 //----------------------Route Tableeeeeeeeeeeeeeeeeeee-----------------------------
-resource "aws_route_table" "sameep_route_table_public_1" {
-  vpc_id = aws_vpc.sameep_terraform_vpc.id
+# resource "aws_route_table" "sameep_route_table_public_1" {
+#   vpc_id = aws_vpc.sameep_terraform_vpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.sameep_internet_gateway_1.id
-  }
-}
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.sameep_internet_gateway_1.id
+#   }
+# }
 
 /*
 resource "aws_route_table" "sameep_route_table_private_1" {
@@ -175,10 +180,10 @@ resource "aws_route_table" "sameep_route_table_private_1" {
 */
 
 //----------------Route Table Associationnnnnnnnnnnn-----------------
-resource "aws_route_table_association" "sameep_association_route_table_public_1" {
-  subnet_id      = aws_subnet.sameep_terraform_subnet_1.id
-  route_table_id = aws_route_table.sameep_route_table_public_1.id
-}
+# resource "aws_route_table_association" "sameep_association_route_table_public_1" {
+#   subnet_id      = aws_subnet.sameep_terraform_subnet_1.id
+#   route_table_id = aws_route_table.sameep_route_table_public_1.id
+# }
 
 /*
 resource "aws_route_table_association" "sameep_association_route_table_private_1" {
@@ -245,28 +250,76 @@ resource "aws_iam_policy" "sameep_policy" {
 }
 */
 //------------------S333333333333333333333333333333------------------------
-# resource "aws_s3_bucket" "sameep_static_website_s3_bucket" {
-#   bucket = "sameep_s3_static_website_bucket" #Should be globally unique
+resource "aws_s3_bucket" "sameep_static_website_s3_bucket" {
+  bucket = "sameep-s3-static-website-bucket" #Should be globally unique
+  # force_destroy = true
 
-#   tags = {
-#   Name        = "sameep_s3_bucket"
-#   owner = "sameep.sigdel"
-#   environment = "dev"
-#   }
-# }
+  tags = {
+  Name        = "sameep_s3_bucket"
+  owner = "sameep.sigdel"
+  environment = "dev"
+  }
+}
 
-# resource "aws_s3_bucket_ownership_controls" "sameep_s3_ownership_controls" {
-#   bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
-#   rule {
-#     object_ownership = "BucketOwnerPreferred"
-#   }
-# }
+resource "aws_s3_bucket_ownership_controls" "sameep_s3_ownership_controls" {
+  bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
 
-# resource "aws_s3_bucket_public_access_block" "sameep_aws_s3_bucket_public_access_block" {
-#   bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+resource "aws_s3_bucket_public_access_block" "sameep_aws_s3_bucket_public_access_block" {
+  bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
 
-#   block_public_acls       = falseonst getUserByID = (req, res) => {
-#   block_public_policy     = false
-#   ignore_public_acls      = false
-#   restrict_public_buckets = false
-# }
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_acl" "sameep_aws_s3_bucket_acl" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.sameep_s3_ownership_controls,
+    aws_s3_bucket_public_access_block.sameep_aws_s3_bucket_public_access_block
+  ]
+
+  bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+  acl    = "public-read"
+}
+
+resource "aws_s3_bucket_policy" "sameep_hosting_aws_s3_bucket_policy" {
+  bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" = "Allow",
+        "Principal" = "*",
+        "Action" = "s3:GetObject",
+        "Resource" = "${aws_s3_bucket.sameep_static_website_s3_bucket.arn}/*"
+      }
+    ]
+  })
+}
+
+resource "aws_s3_bucket_website_configuration" "sameep_hosting_bucket_website_configuration" {
+  bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+  
+  index_document {
+    suffix = "index.html"
+  }
+}
+
+resource "aws_s3_object" "sameep_hosting_bucket_files" {
+  bucket = aws_s3_bucket.sameep_static_website_s3_bucket.id
+
+  for_each = module.template_files.files
+
+  key = each.key
+  content_type = each.value.content_type
+
+  source = each.value.source_path
+  content = each.value.content
+
+  etag = each.value.digests.md5  
+}
